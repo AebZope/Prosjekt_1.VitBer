@@ -44,16 +44,7 @@ def solve_heat_equation(
     # Tidssteging
     for k in range(cfg.nt - 1):
         # Bygg høyresiden b^k
-        b = _build_rhs(
-            cfg,
-            T_curr=T[k],
-            X=X,
-            Y=Y,
-            dx=dx,
-            dy=dy,
-            dt=dt,
-            t_next=t[k + 1],
-        )
+        b = _build_rhs(cfg, T_curr=T[k], X=X, Y=Y, dx=dx, dy=dy,dt=dt, t_next=t[k + 1],)
 
         # Løs lineært system A T^{k+1} = b^k
         T_next = np.linalg.solve(A, b)
