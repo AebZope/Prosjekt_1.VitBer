@@ -35,21 +35,22 @@ def solve_heat_equation(
 
     # Placeholder initialization — replace this with your implementation
     T = np.zeros((cfg.nt, cfg.nx, cfg.ny))
-    # Initialbetingelse: T(x, y, 0) = T_outside
+
+    # Initialbetingelse: T(x, y, 0) = temperatur utenfor rommet.
     T[0, :, :] = cfg.T_outside
 
-    # Bygg systemmatrisen (konstant i tid)
+    # bygger matrise A
     A = _build_matrix(cfg, dx, dy, dt)
 
-    # Tidssteging
+    #itererer gjennom systemets tidssteg 
     for k in range(cfg.nt - 1):
-        # Bygg høyresiden b^k
+        #bygger matrise b for hvert tidssteg.
         b = _build_rhs(cfg, T_curr=T[k], X=X, Y=Y, dx=dx, dy=dy,dt=dt, t_next=t[k + 1],)
 
-        # Løs lineært system A T^{k+1} = b^k
+        # Løser ligningssystemet for temperatur. 
         T_next = np.linalg.solve(A, b)
 
-     # Lagre løsning i 2D-form
+     # Lagrer løsning på 2D-form
         T[k + 1] = T_next.reshape(cfg.nx, cfg.ny)
 
     

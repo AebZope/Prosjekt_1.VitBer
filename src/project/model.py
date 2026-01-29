@@ -62,7 +62,6 @@ def forward(
     cfg: Config,
 ) -> jnp.ndarray:
     """Forward pass through the network.
-
     Args:
         params: Network parameters (just the list of (w, b) tuples)
         x, y, t: Input coordinates (scalars or arrays). Can mix scalars and arrays,
@@ -84,14 +83,28 @@ def forward(
     # Oppgave 4.1: Start
     #######################################################################
 
-    # Placeholder initialization — replace this with your implementation
-    out = None
+    # normaliserer de forskjellig verdiene 
+    x_norm = (x - cfg.x_min) / (cfg.x_max - cfg.x_min)
+    y_norm = (y - cfg.y_min) / (cfg.y_max - cfg.y_min)
+    t_norm = (t - cfg.t_min) / (cfg.t_max - cfg.t_min)
+
+    #Stabler de ulike normaliserte inputparametrene slik at de er på riktig form (array med shape (N,3) 
+    h = jnp.stack([x_norm, y_norm, t_norm], axis=-1)
+
+    # for de ulike NN parametrene erstatter vi h med verdiene som regnes ut ved hjelp av nettverket. her er w-vekt, b-bias
+    for w, b in nn_params[:-1]:
+        h = jnp.tanh(h @ w + b)
+
+    # siste "layer" skal ikke bruke  aktiveringsfunksjonen "tanh". usikker på hvorfor, men det funket sånn ¯\_(ツ)_/¯
+    w_out, b_out = nn_params[-1]
+    out = h @ w_out + b_out
+
+    return out.reshape(-1)
 
     #######################################################################
     # Oppgave 4.1: Slutt
     #######################################################################
 
-    return out
 
 
 def predict_grid(
