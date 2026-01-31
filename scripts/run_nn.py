@@ -20,6 +20,30 @@ def main():
     #######################################################################
     # Oppgave 4.4: Start
     #######################################################################
+    print("Solving heat equation with NN...")
+    x,y,t,_,training = generate_training_data(cfg) # Produsererer treningsdata som vi bruker for å korrigere parametrene våre. 
+    nn_params,losses = train_nn(training,cfg)  #trener parametrene, weight og bias. 
+
+    T_pred = predict_grid(nn_params,x,y,t,cfg) #Bruker de trente parametrene til å predikere en temperatur grid for systemet
+
+    epochs = np.arange(cfg.num_epochs)
+    plt.figure(figsize=(8, 5))
+    plt.plot(epochs, losses["total"], label="Total loss")
+    #plt.plot(epochs, losses["data"], label="Data loss")
+    #plt.plot(epochs, losses["ic"], label="IC loss")
+    plt.yscale("log")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title("NN training losses")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show() 
+
+    create_animation(
+        x, y, t, T_pred, title="FDM", save_path="output/fdm/fdm_animation.gif"
+    )
+
 
     #######################################################################
     # Oppgave 4.4: Slutt

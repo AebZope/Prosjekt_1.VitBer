@@ -26,8 +26,8 @@ def train_nn(
         losses: Dictionary of loss histories
     """
     key = jax.random.key(cfg.seed)
-    nn_params = init_nn_params(cfg)
-    adam_state = init_adam(nn_params)
+    nn_params = init_nn_params(cfg) #Lager liste av weights og biases
+    adam_state = init_adam(nn_params) # initialiserer starttilstanden
 
     losses = {"total": [], "data": [], "ic": []}  # Fill with loss histories
 
@@ -35,7 +35,34 @@ def train_nn(
     # Oppgave 4.3: Start
     #######################################################################
 
-    # Update the nn_params and losses dictionary
+    #Definerer objektivfunksjon, det er dette vi ønsker å minimere og korrigerer våre weights og biasder etter. 
+    def objective_fn(nn_params, ic_punkt): 
+
+        l_data = data_loss(nn_params, sensor_data, cfg)
+        l_ic = ic_loss(nn_params, ic_punkt, cfg)
+        l_total = cfg.lambda_data * l_data + cfg.lambda_ic * l_ic
+
+        return l_total, (l_data, l_ic)
+
+    #Definer funksjon forhvert "step", som korrigerer NN parametrene basert på objektivfunksjonen og lagrer verdiene for total loss, og idividuell loss for data og initialbetingelse
+    @jit # bruker Jax for å kjøre fortere...
+    def step(nn_params, adam_state, ic_punkt): 
+        (loss, (l_data, l_ic)), grads = jax.value_and_grad(objective_fn, has_aux=True)(nn_params, ic_punkt)
+
+        nn_params, adam_state = adam_step(nn_params, grads, adam_state, lr=cfg.learning_rate) #oppdaterer nye parametre og nytt adam state
+
+        return nn_params, adam_state, loss, l_data, l_ic
+
+    # itererer over antall epoker, med progress bar som oppgitt i oppgaven, itererer ved bruk av step funksjonen vi definerte ovenfor.
+    for _ in tqdm(range(cfg.num_epochs), desc="Training NN"): 
+        ic_punkt, key = sample_ic(key, cfg) 
+
+        nn_params, adam_state, l_tot, l_data, l_ic = step(nn_params, adam_state, ic_punkt) 
+
+        # Store losses
+        losses["total"].append(l_tot)
+        losses["data"].append(l_data)
+        losses["ic"].append(l_ic)
 
     #######################################################################
     # Oppgave 4.3: Slutt
