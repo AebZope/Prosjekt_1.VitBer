@@ -44,6 +44,14 @@ def main():
         x, y, t, T_pred, title="FDM", save_path="output/fdm/fdm_animation.gif"
     )
 
+    plot_snapshots(
+        x,
+        y,
+        t,
+        T_pred,
+        save_path="output/fdm/fdm_snapshots.png",
+    )
+
 
     #######################################################################
     # Oppgave 4.4: Slutt
