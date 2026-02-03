@@ -10,7 +10,7 @@ domain:
 # Temporal domain (hours)
 time:
   t_min: 0.0
-  t_max: 72.0
+  t_max: 24.0
 
 # Physical parameters
 physics:

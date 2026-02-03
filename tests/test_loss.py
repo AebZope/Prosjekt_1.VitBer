@@ -295,7 +295,7 @@ class TestPhysicsLoss:
 
         # Manually compute the PDE residual
         def T_fn(x, y, t):
-            return forward(pinn_params["nn"], x, y, t, cfg)
+            return forward(pinn_params["nn"], x, y, t, cfg).squeeze()
 
         # Compute derivatives
         T_t = grad(T_fn, 2)(x_pt, y_pt, t_pt)
