@@ -87,7 +87,7 @@ def physics_loss(pinn_params, interior_points, cfg: Config):
     #######################################################################
     def _pde_residual_scalar(pinn_params, x, y, t, cfg: Config):
         def T_fn(x, y, t):
-            return forward(pinn_params['nn'], x, y, t, cfg).squeeze()
+            return forward(pinn_params['nn'], x, y, t, cfg)
 
         T_t = grad(T_fn, 2)(x, y, t)        
         T_xx = grad(grad(T_fn, 0), 0)(x, y, t)  

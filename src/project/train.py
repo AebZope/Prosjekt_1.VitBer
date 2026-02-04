@@ -91,8 +91,44 @@ def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> tuple[dict, dict]:
     #######################################################################
     # Oppgave 5.3: Start
     #######################################################################
+    @jax.jit
+    def step(pinn_params, opt_state, interior_epoch, ic_epoch, bc_epoch):
+        def objective_fn(pinn_params,interior_epoch,ic_epoch,bc_epoch):
+            l_data = data_loss(pinn_params["nn"], sensor_data, cfg)
+            l_ic = ic_loss(pinn_params["nn"], ic_epoch, cfg)
+            l_physics = physics_loss(pinn_params, interior_epoch, cfg)
+            l_bc = bc_loss(pinn_params, bc_epoch, cfg)
 
-    # Update the nn_params and losses dictionary
+            l_total = (
+            cfg.lambda_data * l_data
+            + cfg.lambda_ic * l_ic
+            + cfg.lambda_physics * l_physics
+            + cfg.lambda_bc * l_bc
+        )
+            return l_total, (l_data, l_ic, l_physics, l_bc)
+        
+        (loss, (l_data, l_ic, l_physics, l_bc)), grads = jax.value_and_grad(
+            objective_fn, has_aux=True
+        )(pinn_params, interior_epoch, ic_epoch, bc_epoch)
+
+        pinn_params, opt_state = adam_step(pinn_params, grads, opt_state, lr=cfg.learning_rate)
+        return pinn_params, opt_state, loss, l_data, l_ic, l_physics, l_bc
+
+
+    for _ in tqdm(range(cfg.num_epochs), desc="Training PINN"):
+        interior_epoch, key = sample_interior(key, cfg)
+        ic_epoch, key = sample_ic(key, cfg)
+        bc_epoch, key = sample_bc(key, cfg)
+
+        pinn_params, opt_state, l_tot, l_data, l_ic, l_physics, l_bc = step(
+            pinn_params, opt_state, interior_epoch, ic_epoch, bc_epoch
+        )
+
+        losses["total"].append(l_tot)
+        losses["data"].append(l_data)
+        losses["ic"].append(l_ic)
+        losses["physics"].append(l_physics)
+        losses["bc"].append(l_bc)
 
     #######################################################################
     # Oppgave 5.3: Slutt

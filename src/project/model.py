@@ -106,12 +106,12 @@ def forward(
     w_out, b_out = nn_params[-1]
     out = h @ w_out + b_out
 
-    return out.reshape(-1)
+    out = out.reshape(-1).squeeze()
 
     #######################################################################
     # Oppgave 4.1: Slutt
     #######################################################################
-
+    return out
 
 
 def predict_grid(
