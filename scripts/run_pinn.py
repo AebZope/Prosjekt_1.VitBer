@@ -61,7 +61,7 @@ def main():
         T_pred,
         save_path="output/pinn/pinn_snapshots.png",
     )
-    '''
+
     # Print lærte fysiske parametere
     alpha = jnp.exp(pinn_params["log_alpha"])
     power = jnp.exp(pinn_params["log_power"])
@@ -69,11 +69,11 @@ def main():
     h     = jnp.exp(pinn_params["log_h"])
 
     print("\nLearned physical parameters:")
-    print(f"alpha = {alpha:.4f}")
-    print(f"power = {power:.4f}")
-    print(f"k     = {k:.4f}")
-    print(f"h     = {h:.4f}")
-    '''
+    print(f"alpha = {alpha}")
+    print(f"power = {power}")
+    print(f"k     = {k}")
+    print(f"h     = {h}")
+
     #######################################################################
     # Oppgave 5.4: Slutt
     #######################################################################
