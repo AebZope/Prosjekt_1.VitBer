@@ -44,7 +44,7 @@ def init_pinn_params(cfg: Config, seed: int | None = None):
     # Oppgave 5.1: Start
     #######################################################################
 
-    nn_params = init_nn_params(cfg,nn_key)
+    nn_params = init_nn_params(cfg,nn_key) #Definerer tilfeldige NN parametre
 
     pinn_params = {
         "nn": nn_params,
@@ -52,7 +52,7 @@ def init_pinn_params(cfg: Config, seed: int | None = None):
         "log_power": jax.random.normal(scalars_key, (1,)),
         "log_k": jax.random.normal(scalars_key, (1,)),
         "log_h": jax.random.normal(scalars_key, (1,)),
-    }
+    } #Setter PINN parametre på riktig form, med tilfeldige verdier for alpha,power,k, og h sine logaritmer. 
     
     #######################################################################
     # Oppgave 5.1: Slutt

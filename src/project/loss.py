@@ -30,8 +30,8 @@ def data_loss(
     #######################################################################
     # Oppgave 4.2: Start
     #######################################################################
-    #Implementerer loss funksjonen fra oppgavearket med hensikt på Data.
-    data_loss_val = jnp.mean((forward(nn_params,x,y,t,cfg)-T_true)**2) 
+    
+    data_loss_val = jnp.mean((forward(nn_params,x,y,t,cfg)-T_true)**2) #bruker utrykket fra oppgaveteksten
 
     #######################################################################
     # Oppgave 4.2: Slutt (se også ic_loss)
@@ -61,7 +61,7 @@ def ic_loss(
     # Oppgave 4.2: Start
     #######################################################################
 
-    ic_loss_val = jnp.mean((forward(nn_params,x,y,0,cfg)-cfg.T_outside)**2) 
+    ic_loss_val = jnp.mean((forward(nn_params,x,y,0,cfg)-cfg.T_outside)**2)  #Utrykke fra oppgaveteksten
 
     #######################################################################
     # Oppgave 4.2: Slutt (se også data_loss)
@@ -87,13 +87,13 @@ def physics_loss(pinn_params, interior_points, cfg: Config):
     #######################################################################
     def _pde_residual_scalar(pinn_params, x, y, t, cfg: Config):
         def T_fn(x, y, t):
-            return forward(pinn_params['nn'], x, y, t, cfg)
+            return forward(pinn_params['nn'], x, y, t, cfg) #Returnerer funksjonen T gitt ved PINN parametrene
 
-        T_t = grad(T_fn, 2)(x, y, t)        
+        T_t = grad(T_fn, 2)(x, y, t)   #Deriverer T med hensyn på forskjellige størrelser 
         T_xx = grad(grad(T_fn, 0), 0)(x, y, t)  
         T_yy = grad(grad(T_fn, 1), 1)(x, y, t) 
 
-        alpha = jnp.exp(pinn_params["log_alpha"])
+        alpha = jnp.exp(pinn_params["log_alpha"]) #alpha = exp(log_alpha), siden vi definerte verdiene i PINN_params som log. 
 
         q = jnp.where(cfg.is_source(x, y), jnp.exp(pinn_params["log_power"]), 0.0)
 
@@ -101,7 +101,7 @@ def physics_loss(pinn_params, interior_points, cfg: Config):
         return residual
     
     residuals = vmap(
-        lambda xi, yi, ti: _pde_residual_scalar(pinn_params, xi, yi, ti, cfg))(x, y, t)
+        lambda xi, yi, ti: _pde_residual_scalar(pinn_params, xi, yi, ti, cfg))(x, y, t) #Oppgitt i oppgavetekst
 
     physics_loss_val = jnp.mean(residuals**2)
    

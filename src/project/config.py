@@ -72,6 +72,29 @@ class Config:
         """Heat source term at point (x, y, t)."""
         return jnp.where(self.is_source(x, y), self.source_strength, 0.0)
 
+############ Optimal plassering av sekundær varmekilde #######################################################################
+    def is_source_optimal(self, x, y,cx,cy): #Endrer på funksjonen slik at den tar inn posisjonen til den nye varmekilden.
+        
+        # source_locations: (S, 2), source_sizes: (S,)
+        sizes = self.source_sizes  # (S,)
+        cx_sources = jnp.array([1.0,cx]) #Endrer på definisjon av cx og cy, slik at de bruker både "Peis" i (0,0) og oppgitt varmekilde. 
+        cy_sources = jnp.array([1.0,cy])
+        sizes = jnp.array([self.source_sizes[0], self.source_sizes[0]])
+                          
+        # Broadcast x, y against source centers
+        # x, y can be scalars or arrays of any shape
+        dx = jnp.abs(x - cx_sources[:,None,None]) 
+        dy = jnp.abs(y - cy_sources[:,None,None]) 
+
+        inside = (dx <= sizes[:, None, None]) & (dy <= sizes[:, None, None])
+        return jnp.any(inside, axis=0)  # same shape as x, y
+
+    def heat_source_optimal(self, x, y, t,cx,cy): 
+        """Heat source term at point (x, y, t)."""
+        return jnp.where(self.is_source_optimal(x, y,cx,cy), self.source_strength, 0.0) #Bruker ny funksjon definert ovenfor ^
+
+#####################################################################################################################
+
 
 def load_config(path: str | Path = "config.yaml") -> Config:
     """Load configuration from YAML file."""

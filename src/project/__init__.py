@@ -2,6 +2,7 @@ from .config import Config, load_config
 from .data import generate_training_data
 from .fdm import solve_heat_equation
 from .fdm import solve_heat_equation_smart
+from .fdm import solve_heat_equation_optimal
 from .loss import data_loss, ic_loss, physics_loss
 from .model import forward, init_nn_params, init_pinn_params, predict_grid
 from .optim import adam_step, init_adam
@@ -13,6 +14,7 @@ __all__ = [
     "load_config",
     "solve_heat_equation",
     "solve_heat_equation_smart",
+    "solve_heat_equation_optimal", 
     "init_nn_params",
     "init_pinn_params",
     "forward",

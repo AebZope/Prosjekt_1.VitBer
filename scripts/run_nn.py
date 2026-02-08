@@ -29,8 +29,8 @@ def main():
     epochs = np.arange(cfg.num_epochs)
     plt.figure(figsize=(8, 5))
     plt.plot(epochs, losses["total"], label="Total loss")
-    #plt.plot(epochs, losses["data"], label="Data loss")
-    #plt.plot(epochs, losses["ic"], label="IC loss")
+    plt.plot(epochs, losses["data"], label="Data loss")
+    plt.plot(epochs, losses["ic"], label="IC loss")
     plt.yscale("log")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
@@ -41,7 +41,7 @@ def main():
     plt.show() 
 
     create_animation(
-        x, y, t, T_pred, title="FDM", save_path="output/fdm/fdm_animation.gif"
+        x, y, t, T_pred, title="NN", save_path="output/NN/NN_animation.gif"
     )
 
     plot_snapshots(
@@ -49,9 +49,8 @@ def main():
         y,
         t,
         T_pred,
-        save_path="output/fdm/fdm_snapshots.png",
+        save_path="output/NN/NN_snapshots.png",
     )
-
 
     #######################################################################
     # Oppgave 4.4: Slutt
